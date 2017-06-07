@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<style>
+.inputtxt {
+    width:90%;
+    height:300px;
+    font-size:24px;
+    font-style: italic;
+    font-family: times;
+}
+</style>
+</head>
+
+<body>
+
+<p id="citation">citation here</p>
+
+<textarea id="txt" class="inputtxt">
+</textarea>
+
+<button type="button" onclick="updateCitation()">update citation</button>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+// gets the data from the local json file
+$(function() {
+    $.getJSON('data.json', function(data) {
+        console.log(data);
+        // populates the textarea
+        $('#txt').val(data.results[1].title);
+        console.log("got json");
+    });
+    console.log("ran function");
+});
+console.log("ran");
+</script>
+
+<script>
+// sets the "citation" element to whatever is in the "txt" element
+function updateCitation() {
+    var newCite = document.getElementById("txt").value;
+    console.log(newCite);
+    document.getElementById("citation").innerHTML = newCite;
+    console.log("updateCitation ran");
+}
+</script>
+
+</body>
+</html> 

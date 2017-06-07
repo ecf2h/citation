@@ -1,0 +1,57 @@
+{ 
+	"results": [{
+		"title": "The Resonance of Earth, Other Worlds, and Exoplanets",
+		"authors": [{
+			"family": "Oman-Reagan",
+			"given": "Michael P"
+		}],
+		"dateCreated": "2017-02-24 03:48 AM",
+		"dateUpdated": "2017-02-24 03:50 AM",
+		"projectID": "gstzz",
+		"projectURL": "https://osf.io/gstzz/"
+	}, {
+		"title": "Himalayan Sea Salt: Salt of the Earth or New Millenium Snake Oil?",
+		"authors": [{
+			"family": "Topolski",
+			"given": "Richard"
+		}, {
+			"family": "Covington",
+			"given": "Katherine"
+		}, {
+			"family": "Patton",
+			"given": "Tadd"
+		}, {
+			"family": "Eckert",
+			"given": "Breanne"
+		}, {
+			"family": "Trigg",
+			"given": "Margaret"
+		}, {
+			"family": "Orr",
+			"given": "Adrienne"
+		}, {
+			"family": "Mattis",
+			"given": "Amy"
+		}, {
+			"family": "Berdon",
+			"given": "Elizabeth"
+		}],
+		"dateCreated": "2017-02-17 10:27 PM",
+		"dateUpdated": "2017-02-23 08:15 PM",
+		"projectID": "2xq4u",
+		"projectURL": "https://osf.io/2xq4u/"
+	}, {
+		"title": "Lack of evidence for increased perceptions of fertility on the ''red planet''",
+		"authors": [{
+			"family": "Morey",
+			"given": "Richard"
+		}, {
+			"family": "Elson",
+			"given": "Malte"
+		}],
+		"dateCreated": "2017-03-31 08:15 PM",
+		"dateUpdated": "2017-03-31 08:20 PM",
+		"projectID": "djvwh",
+		"projectURL": "https://osf.io/djvwh/"
+	}]
+}
