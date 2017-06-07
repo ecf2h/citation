@@ -28,23 +28,18 @@
 // gets the data from the local json file
 $(function() {
     $.getJSON('data.json', function(data) {
-        console.log(data);
         // populates the textarea
         $('#txt').val(data.results[1].title);
-        console.log("got json");
+        updateCitation();
     });
-    console.log("ran function");
 });
-console.log("ran");
 </script>
 
 <script>
 // sets the "citation" element to whatever is in the "txt" element
 function updateCitation() {
     var newCite = document.getElementById("txt").value;
-    console.log(newCite);
     document.getElementById("citation").innerHTML = newCite;
-    console.log("updateCitation ran");
 }
 </script>
 
