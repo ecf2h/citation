@@ -6,11 +6,15 @@
 .inputtxt {
     width:90%;
     height:300px;
-    font-size:24px;
-    font-style: italic;
-    font-family: times;
+    font-size:16px;
+    font-family:times;
 }
 </style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="citeproc.js"></script>
 </head>
 
 <body>
@@ -23,17 +27,99 @@
 <button type="button" onclick="updateCitation()">update citation</button>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="./ind/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/static/vendor/bower_components/jquery/dist/jquery.min.js">\x3C/script>')</script>
+<script src="./ind/jquery-ui.min.js"></script>
+<script src="./ind/raven.min.js"></script>
+<script>
+Raven.config("https://315af0bcc90a402c8d207c5953b4423c@sentry.cos.io/39", {}).install();
+</script>
+<script>window.jQuery.ui || document.write('<script src="/static/vendor/bower_components/jquery-ui/ui/minified/jquery-ui.min.js">\x3C/script>')</script>
+
+<!-- JQuery 3 for IE Patching -->
+
+<script type="text/javascript" src="./ind/jquery-compat-git.js"></script> 
+<script type="text/javascript">
+var $3 = jQuery.noConflict(true);
+</script>
+<script src="./ind/vendor.6e67ed74925a1caa3ef3.js"></script>
 
 <script>
 // gets the data from the local json file
 $(function() {
-    $.getJSON('data.json', function(data) {
-        // populates the textarea
-        $('#txt').val(data.results[1].title);
+    $.getJSON('data2.json', function(data) {
+        console.log(data);
+    }).then(function(data) {
+        var chosenStyleID = "chicago-fullnote-bibliography";
+
+        // get citation data
+        var citationData = data;
+
+        // Refactor citation data for keyed access
+        var citations = {};
+        var itemIDs = [];
+        for (var i=0,ilen=citationData.items.length;i<ilen;i++) {
+            var item = citationData.items[i];
+            if (!item.issued) continue;
+            if (item.URL) delete item.URL;
+            var id = item.id;
+            citations[id] = item;
+            itemIDs.push(id);
+        }
+
+        // Initialize a system object
+        citeprocSys = {
+          retrieveLocale: function (lang){
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://raw.githubusercontent.com/Juris-M/citeproc-js-docs/master/locales-' + lang + '.xml', false);
+            xhr.send(null);
+            return xhr.responseText;
+          },
+          retrieveItem: function(id){
+            return citations[id];
+          }
+        };
+
+        // Instantiate processor
+        function getProcessor(styleID) {
+            // Get the CSL style as a serialized string of XML
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://raw.githubusercontent.com/citation-style-language/styles/master/' + styleID + '.csl', false);
+            xhr.send(null);
+            var styleAsText = xhr.responseText;
+            var citeproc = new CSL.Engine(citeprocSys, styleAsText);
+            return citeproc;
+        };
+
+        // This runs at document ready, and renders the bibliography
+        function processorOutput() {
+            ret = '';
+            var citeproc = getProcessor(chosenStyleID);
+            citeproc.updateItems(itemIDs);
+            var bibResult = citeproc.makeBibliography();
+            console.log("bibResult");
+            console.log(bibResult);
+            return bibResult[1].join('\n');
+        }
+
+        // populates textarea
+        $('#txt').val(processorOutput());
         updateCitation();
     });
 });
 </script>
+
+<!-- https://www.html5rocks.com/en/tutorials/cors/
+cross-origin requests
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $.get("https://osf.io/api/v1/project/a6pu9/citation/", function(data) {
+    console.log(data);
+  })
+})
+</script> -->
 
 <script>
 // sets the "citation" element to whatever is in the "txt" element
