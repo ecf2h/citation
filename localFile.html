@@ -9,7 +9,7 @@
 </head>
 <body>
   <div class="section" id="my-amazing-bibliography">
-    <h2>pulls data from local file but doesn't display data nicely</h2>
+    <h2>pulls data from local file and displays data nicely</h2>
   </div>
   <div class="container">
     <div class="row">
@@ -31,7 +31,7 @@ $(function() {
   $.getJSON('data4.json', function(data) {
     console.log(data);
   }).then(function(data) {
-    var stringData = JSON.stringify(data);
+    var stringData = JSON.stringify(data, undefined, 4);
     $('#json-text').val(stringData);
     makeCitations(data);
   })
