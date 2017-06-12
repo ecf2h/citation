@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel = "stylesheet" type = "text/css" href = "style.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="citeproc.js"></script>
+</head>
+<body>
+  <div class="section" id="my-amazing-bibliography">
+    <h2>pulls data from local file but doesn't display data nicely</h2>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6" id="csl-outer-block" =>
+        <div id="csl-inner-block">
+          <div id="csl-content-block"></div>
+        </div>
+      </div>
+      <div class="col-sm-6" rows="50" cols="50">
+        <textarea class="json-data" id="json-text">
+</textarea>
+</div>
+</div>
+
+<button type="button" onclick="makeCitations()" disabled>Update</button>
+
+<script>
+$(function() {
+  $.getJSON('data4.json', function(data) {
+    console.log(data);
+  }).then(function(data) {
+    var stringData = JSON.stringify(data);
+    $('#json-text').val(stringData);
+    makeCitations(data);
+  })
+})
+</script>
+
+<script>
+function makeCitations(data) {
+   var citationData = JSON.parse(document.getElementById("json-text").value);
+
+  // Chicago Manual of Style (Full Note)
+  var chosenStyleID = "chicago-fullnote-bibliography";
+
+  // Refactor citation data for keyed access
+  var citations = {};
+  var itemIDs = [];
+  for (var i=0,ilen=citationData.items.length;i<ilen;i++) {
+    var item = citationData.items[i];
+    if (!item.issued) continue;
+    if (item.URL) delete item.URL;
+    var id = item.id;
+    citations[id] = item;
+    itemIDs.push(id);
+  }
+
+  // Initialize a system object
+  citeprocSys = {
+    retrieveLocale: function (lang){
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'https://raw.githubusercontent.com/Juris-M/citeproc-js-docs/master/locales-' + lang + '.xml', false);
+      xhr.send(null);
+      return xhr.responseText;
+    },
+    retrieveItem: function(id){
+      return citations[id];
+    }
+  };
+
+  // Runs at document ready, instantiates processor and renders bibliography
+  function processorOutput() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://raw.githubusercontent.com/citation-style-language/styles/master/' + chosenStyleID + '.csl', false);
+    xhr.send(null);
+    var styleAsText = xhr.responseText;
+    var citeproc = new CSL.Engine(citeprocSys, styleAsText);
+    citeproc.updateItems(itemIDs);
+    var bibResult = citeproc.makeBibliography();
+    return bibResult[1].join('\n');
+  }
+
+  var content = document.getElementById("csl-content-block");
+  content.innerHTML = processorOutput();
+
+  function updatesCitations() {
+    var newCite = document.getElementById("json-text").value;
+    var citationData = JSON.parse(newCite);
+    // Refactor citation data for keyed access
+    var citations = {};
+    var itemIDs = [];
+    for (var i=0,ilen=citationData.items.length;i<ilen;i++) {
+      var item = citationData.items[i];
+      if (!item.issued) continue;
+      // if (item.URL) 
+      delete item.URL;
+      var id = item.id;
+      citations[id] = item;
+      itemIDs.push(id);
+    }
+
+    citeprocSys = {
+      retrieveLocale: function (lang){
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://raw.githubusercontent.com/Juris-M/citeproc-js-docs/master/locales-' + lang + '.xml', false);
+        xhr.send(null);
+        return xhr.responseText;
+      },
+      retrieveItem: function(id){
+        return citations[id];
+      }
+    };
+    var contentblock = document.getElementById("csl-content-block");
+    contentblock.innerHTML = processorOutput();
+  }
+
+  $('button').prop('disabled', false);
+}
+</script>
+
+</div>
+</body>
+</html>
