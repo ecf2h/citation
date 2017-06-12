@@ -3,13 +3,20 @@
 
 <head>
     <style>
+        .cite {
+            padding-left: 10px;
+            width:50%;
+        }
+
         .inputtxt {
-            width:90%;
-            height:300px;
+            width:50%;
+            height:100px;
             font-size:14px;
             white-space:pre-wrap;
             cursor: pointer;
-            /*font-family:times;*/
+            overflow-y: scroll;
+            display: inline;
+            position:relative;
         }
     </style>
 
@@ -21,7 +28,7 @@
 
 <body>
 
-    <p id="citation">citation here</p>
+    <p id="citation" class="cite">citation here</p>
 
     <textarea id="txt" class="inputtxt">
     </textarea>
@@ -50,10 +57,10 @@
 <script>
 // gets the data from the local json file
 $(function() {
-    $.getJSON('data2.json', function(data) {
+    $.getJSON('data3.json', function(data) {
         console.log(data);
-        var jsonString = JSON.stringify(data);
-        $('#txt').val(jsonString);
+        // var jsonString = JSON.stringify(data);
+        // $('#txt').val(jsonString);
     }).then(function(data) {
         var chosenStyleID = "chicago-fullnote-bibliography";
 
@@ -108,7 +115,7 @@ $(function() {
         }
 
         // populates textarea
-        // $('#txt').val(processorOutput());
+        $('#txt').val(processorOutput());
         updateCitation();
     });
 });

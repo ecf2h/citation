@@ -55,7 +55,6 @@
 // })
 
 var newCite = document.getElementById("json-text").value;
-// function invokeCiteProc() {
   var citationData = JSON.parse(newCite);
 
 // Chicago Manual of Style (Full Note)
@@ -86,22 +85,13 @@ citeprocSys = {
   }
 };
 
-// Instantiate processor
-function getProcessor(styleID) {
-  // Get the CSL style as a serialized string of XML
+// This runs at document ready, and renders the bibliography
+function processorOutput() {
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'https://raw.githubusercontent.com/citation-style-language/styles/master/' + styleID + '.csl', false);
+  xhr.open('GET', 'https://raw.githubusercontent.com/citation-style-language/styles/master/' + chosenStyleID + '.csl', false);
   xhr.send(null);
   var styleAsText = xhr.responseText;
   var citeproc = new CSL.Engine(citeprocSys, styleAsText);
-  return citeproc;
-};
-
-
-// This runs at document ready, and renders the bibliography
-function processorOutput() {
-  ret = '';
-  var citeproc = getProcessor(chosenStyleID);
   citeproc.updateItems(itemIDs);
   var bibResult = citeproc.makeBibliography();
   return bibResult[1].join('\n');
