@@ -43,7 +43,7 @@
 </textarea>
 </div>
 </div>
-<button type="button" onclick="updatesCitations()">Update</button>
+<button type="button" onclick="makeCitations()">Update</button>
 </div>
 
 <script>
@@ -52,83 +52,58 @@
 //   $.get("https://osf.io/api/v1/project/a6pu9/citation/", function(data) {
 //     console.log(data);
 //   })
-// })
+// 
+var stringData = JSON.stringify(data, undefined, 4);
+    $('#json-text').val(stringData);
+    makeCitations(data);
 
-var citationData = JSON.parse(document.getElementById("json-text").value);
+function makeCitations(data) {
+  // get whatever is in the textarea
+   var citationData = JSON.parse(document.getElementById("json-text").value);
 
-// Chicago Manual of Style (Full Note)
-var chosenStyleID = "chicago-fullnote-bibliography";
+  // choose your citation style - Chicago Manual of Style (Full Note)
+  var chosenStyleID = "chicago-fullnote-bibliography";
 
-// Refactor citation data for keyed access
-var citations = {};
-var itemIDs = [];
-for (var i=0,ilen=citationData.items.length;i<ilen;i++) {
-  var item = citationData.items[i];
-  if (!item.issued) continue;
-  if (item.URL) delete item.URL;
-  var id = item.id;
-  citations[id] = item;
-  itemIDs.push(id);
-}
-
-// Initialize a system object
-citeprocSys = {
-  retrieveLocale: function (lang){
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'https://raw.githubusercontent.com/Juris-M/citeproc-js-docs/master/locales-' + lang + '.xml', false);
-    xhr.send(null);
-    return xhr.responseText;
-  },
-  retrieveItem: function(id){
-    return citations[id];
+  // Refactor citation data for keyed access
+  var citations = {};
+  var itemIDs = [];
+  for (var i=0,ilen=citationData.items.length;i<ilen;i++) {
+    var item = citationData.items[i];
+    if (!item.issued) continue;
+    if (item.URL) delete item.URL; // why??
+    var id = item.id;
+    citations[id] = item;
+    itemIDs.push(id);
   }
-};
 
-// Runs at document ready, instantiates processor and renders bibliography
-function processorOutput() {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'https://raw.githubusercontent.com/citation-style-language/styles/master/' + chosenStyleID + '.csl', false);
-  xhr.send(null);
-  var styleAsText = xhr.responseText;
-  var citeproc = new CSL.Engine(citeprocSys, styleAsText);
-  citeproc.updateItems(itemIDs);
-  var bibResult = citeproc.makeBibliography();
-  return bibResult[1].join('\n');
-}
-
-var content = document.getElementById("csl-content-block");
-content.innerHTML = processorOutput();
-
-function updatesCitations() {
-  var newCite = document.getElementById("json-text").value;
-  var citationData = JSON.parse(newCite);
-    // Refactor citation data for keyed access
-    var citations = {};
-    var itemIDs = [];
-    for (var i=0,ilen=citationData.items.length;i<ilen;i++) {
-      var item = citationData.items[i];
-      if (!item.issued) continue;
-      // if (item.URL) 
-      delete item.URL;
-      var id = item.id;
-      citations[id] = item;
-      itemIDs.push(id);
+  // Initialize a system object
+  citeprocSys = {
+    retrieveLocale: function (lang){
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'https://raw.githubusercontent.com/Juris-M/citeproc-js-docs/master/locales-' + lang + '.xml', false);
+      xhr.send(null);
+      return xhr.responseText;
+    },
+    retrieveItem: function(id){
+      return citations[id];
     }
+  };
 
-    citeprocSys = {
-      retrieveLocale: function (lang){
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://raw.githubusercontent.com/Juris-M/citeproc-js-docs/master/locales-' + lang + '.xml', false);
-        xhr.send(null);
-        return xhr.responseText;
-      },
-      retrieveItem: function(id){
-        return citations[id];
-      }
-    };
-    var contentblock = document.getElementById("csl-content-block");
-    contentblock.innerHTML = processorOutput();
+  // Runs at document ready, instantiates processor and renders bibliography
+  function processorOutput() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://raw.githubusercontent.com/citation-style-language/styles/master/' + chosenStyleID + '.csl', false);
+    xhr.send(null);
+    var styleAsText = xhr.responseText;
+    var citeproc = new CSL.Engine(citeprocSys, styleAsText);
+    citeproc.updateItems(itemIDs);
+    var bibResult = citeproc.makeBibliography();
+    return bibResult[1].join('\n');
   }
+
+  var content = document.getElementById("csl-content-block");
+  content.innerHTML = processorOutput();
+}
 </script>
 </body>
 </html>

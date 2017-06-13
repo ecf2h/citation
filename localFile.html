@@ -9,7 +9,7 @@
 </head>
 <body>
   <div class="section" id="my-amazing-bibliography">
-    <h2>pulls data from local file and displays data nicely</h2>
+    <h2>pulls data from local file and displays data nicely - compact</h2>
   </div>
   <div class="container">
     <div class="row">
@@ -27,6 +27,7 @@
 <button type="button" onclick="makeCitations()" disabled>Update</button>
 
 <script>
+// get the data from the local file
 $(function() {
   $.getJSON('data4.json', function(data) {
     console.log(data);
@@ -36,13 +37,13 @@ $(function() {
     makeCitations(data);
   })
 })
-</script>
 
-<script>
+// take the stringified JSON in the textarea and parse it into a citation
 function makeCitations(data) {
+  // get whatever is in the textarea
    var citationData = JSON.parse(document.getElementById("json-text").value);
 
-  // Chicago Manual of Style (Full Note)
+  // choose your citation style - Chicago Manual of Style (Full Note)
   var chosenStyleID = "chicago-fullnote-bibliography";
 
   // Refactor citation data for keyed access
@@ -51,7 +52,7 @@ function makeCitations(data) {
   for (var i=0,ilen=citationData.items.length;i<ilen;i++) {
     var item = citationData.items[i];
     if (!item.issued) continue;
-    if (item.URL) delete item.URL;
+    if (item.URL) delete item.URL; // why??
     var id = item.id;
     citations[id] = item;
     itemIDs.push(id);
@@ -85,37 +86,7 @@ function makeCitations(data) {
   var content = document.getElementById("csl-content-block");
   content.innerHTML = processorOutput();
 
-  function updatesCitations() {
-    var newCite = document.getElementById("json-text").value;
-    var citationData = JSON.parse(newCite);
-    // Refactor citation data for keyed access
-    var citations = {};
-    var itemIDs = [];
-    for (var i=0,ilen=citationData.items.length;i<ilen;i++) {
-      var item = citationData.items[i];
-      if (!item.issued) continue;
-      // if (item.URL) 
-      delete item.URL;
-      var id = item.id;
-      citations[id] = item;
-      itemIDs.push(id);
-    }
-
-    citeprocSys = {
-      retrieveLocale: function (lang){
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://raw.githubusercontent.com/Juris-M/citeproc-js-docs/master/locales-' + lang + '.xml', false);
-        xhr.send(null);
-        return xhr.responseText;
-      },
-      retrieveItem: function(id){
-        return citations[id];
-      }
-    };
-    var contentblock = document.getElementById("csl-content-block");
-    contentblock.innerHTML = processorOutput();
-  }
-
+  // have the update button disabled until all of this has started to run
   $('button').prop('disabled', false);
 }
 </script>
